@@ -12,6 +12,7 @@
     </scroll>
     <detail-bottom-bar @addCart="addToCart" />
     <back-top @click.native="backClick" v-show="isShowBackTop" />
+    <!-- <toast :message="message" :show="show" /> -->
   </div>
 </template>
 
@@ -27,6 +28,9 @@ import DetailBottomBar from "./childComps/DetailBottomBar";
 
 import Scroll from "components/common/scroll/Scroll";
 import GoodsList from "components/content/goods/GoodsList";
+// import Toast from "components/common/toast/Toast";
+
+import { mapActions } from "vuex";
 
 import {
   getDetail,
@@ -51,6 +55,7 @@ export default {
     DetailBottomBar,
     Scroll,
     GoodsList
+    // Toast
   },
   mixins: [itemListenerMixin, backTopMixin],
   data() {
@@ -66,6 +71,8 @@ export default {
       themeTopYs: [],
       getThemeTopY: null,
       currentIndex: 0
+      // message: "",
+      // show: false
     };
   },
   created() {
@@ -121,6 +128,7 @@ export default {
     }, 100);
   },
   methods: {
+    ...mapActions(["addCart"]),
     imageLoad() {
       this.$refs.scroll.refresh();
 
@@ -145,17 +153,6 @@ export default {
           this.currentIndex = i;
           this.$refs.nav.currentIndex = this.currentIndex;
         }
-
-        // if (
-        //   this.currentIndex !== i &&
-        //   ((i < length - 1 &&
-        //     positionY >= this.themeTopYs[i] &&
-        //     positionY < this.themeTopYs[i + 1]) ||
-        //     (i === length - 1 && positionY >= this.themeTopYs[i]))
-        // ) {
-        //   this.currentIndex = i;
-        //   this.$refs.nav.currentIndex = this.currentIndex;
-        // }
       }
 
       // 3.是否显示回到顶部
@@ -171,7 +168,19 @@ export default {
       product.iid = this.iid;
 
       // 2.将商品添加到购物车里
-      this.$store.dispatch("addCart", product);
+      this.addCart(product).then(res => {
+        // this.show = true;
+        // this.message = res;
+        // setTimeout(() => {
+        //   this.show = false;
+        //   this.message = "";
+        // }, 1500);
+
+        this.$toast.show(res, 2000);
+      });
+      // this.$store.dispatch("addCart", product).then(res => {
+      //   console.log(res);
+      // });
     }
   },
   mounted() {},
